@@ -1,0 +1,173 @@
+-- ****************** SqlDBM: MySQL ******************;
+-- ***************************************************;
+
+DROP TABLE `OrderItem`;
+
+
+DROP TABLE `Product`;
+
+
+DROP TABLE `Order`;
+
+
+DROP TABLE `Category`;
+
+
+DROP TABLE `Group`;
+
+
+DROP TABLE `Supplier`;
+
+
+DROP TABLE `User`;
+
+
+
+-- ************************************** `Category`
+
+CREATE TABLE `Category`
+(
+ `CategoryId`   INT NOT NULL ,
+ `CategoryName` VARCHAR(50) NOT NULL ,
+
+PRIMARY KEY (`CategoryId`)
+);
+
+
+
+
+
+
+-- ************************************** `Group`
+
+CREATE TABLE `Group`
+(
+ `GroupId`    NOT NULL ,
+ `GroupName` VARCHAR(50) NOT NULL ,
+
+PRIMARY KEY (`GroupId`)
+);
+
+
+
+
+
+
+-- ************************************** `Supplier`
+
+CREATE TABLE `Supplier`
+(
+ `SupplierId`            INT NOT NULL AUTO_INCREMENT ,
+ `SupplierName`          VARCHAR(40) NOT NULL ,
+ `SupplierCNPJ`          INT(15) NOT NULL ,
+ `SupplierEndereco`      VARCHAR(45) NOT NULL ,
+ `SupplierEmail`         VARCHAR(255) NOT NULL ,
+ `INT(12)`               VARCHAR(255) NOT NULL ,
+ `SupplierPhone`         INT(12) NOT NULL ,
+ `SupplierCondComm`      VARCHAR(255) NOT NULL ,
+ `SupplierOrderMinValue` INT(15) NOT NULL ,
+
+PRIMARY KEY (`SupplierId`),
+UNIQUE KEY `AK1_Supplier_CompanyName` (`SupplierName`)
+) AUTO_INCREMENT=1 COMMENT='Basic information \nabout Supplier';
+
+
+
+
+
+
+-- ************************************** `User`
+
+CREATE TABLE `User`
+(
+ `UserId`           INT NOT NULL AUTO_INCREMENT ,
+ `UserUsername`     VARCHAR(40) NOT NULL ,
+ `UserPassword`     VARCHAR(20) NOT NULL ,
+ `UserCPF`          INT(11) NOT NULL ,
+ `UserEmail`         NOT NULL ,
+ `UserPrivilegesID`  NOT NULL ,
+
+PRIMARY KEY (`UserId`),
+UNIQUE KEY `AK1_Customer_CustomerName` (`UserUsername`)
+) AUTO_INCREMENT=1 COMMENT='Basic information \nabout Customer';
+
+
+
+
+
+
+-- ************************************** `Product`
+
+CREATE TABLE `Product`
+(
+ `ProductId`        INT NOT NULL AUTO_INCREMENT ,
+ `ProductName`      VARCHAR(50) NOT NULL ,
+ `ProductUnitPrice` DECIMAL(12,2) ,
+ `ProductActive`    BINARY NOT NULL DEFAULT 0 ,
+ `SupplierId`       INT NOT NULL ,
+ `ProductSalePrice`  NOT NULL ,
+ `ProductSKU`        NOT NULL ,
+ `ProductMinStock`   NOT NULL ,
+ `CategoryId`        NOT NULL ,
+ `GroupId_1`         NOT NULL ,
+ `CategoryId_1`     INT NOT NULL ,
+
+PRIMARY KEY (`ProductId`),
+UNIQUE KEY `AK1_Product_SupplierId_ProductName` (`ProductName`, `SupplierId`),
+KEY `FK_Product_SupplierId_Supplier` (`SupplierId`),
+CONSTRAINT `FK_Product_SupplierId_Supplier` FOREIGN KEY `FK_Product_SupplierId_Supplier` (`SupplierId`) REFERENCES `Supplier` (`SupplierId`),
+KEY `fkIdx_122` (`GroupId_1`),
+CONSTRAINT `FK_122` FOREIGN KEY `fkIdx_122` (`GroupId_1`) REFERENCES `Group` (`GroupId`),
+KEY `fkIdx_138` (`CategoryId_1`),
+CONSTRAINT `FK_138` FOREIGN KEY `fkIdx_138` (`CategoryId_1`) REFERENCES `Category` (`CategoryId`)
+) AUTO_INCREMENT=1 COMMENT='Basic information \nabout Product';
+
+
+
+
+
+
+-- ************************************** `Order`
+
+CREATE TABLE `Order`
+(
+ `OrderId`     INT NOT NULL AUTO_INCREMENT ,
+ `OrderNumber` VARCHAR(10) ,
+ `UserId`      INT NOT NULL ,
+ `OrderDate`   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+ `TotalAmount` DECIMAL(12,2) NOT NULL ,
+ `OrderType`    NOT NULL ,
+ `OrderReason`  NOT NULL ,
+
+PRIMARY KEY (`OrderId`, `OrderType`),
+UNIQUE KEY `AK1_Order_OrderNumber` (`OrderNumber`),
+KEY `FK_Order_CustomerId_Customer` (`UserId`),
+CONSTRAINT `FK_Order_CustomerId_Customer` FOREIGN KEY `FK_Order_CustomerId_Customer` (`UserId`) REFERENCES `User` (`UserId`)
+) AUTO_INCREMENT=1 COMMENT='Order information\nlike Date, Ammount\n';
+
+
+
+
+
+
+-- ************************************** `OrderItem`
+
+CREATE TABLE `OrderItem`
+(
+ `OrderId`          INT NOT NULL ,
+ `ProductId`        INT NOT NULL ,
+ `ProductUnitPrice` DECIMAL(12,2) NOT NULL ,
+ `Quantity`         INT NOT NULL ,
+ `OrderType`         NOT NULL ,
+
+PRIMARY KEY (`OrderId`, `ProductId`, `OrderType`),
+KEY `FK_OrderItem_OrderId_Order` (`OrderId`, `OrderType`),
+CONSTRAINT `FK_OrderItem_OrderId_Order` FOREIGN KEY `FK_OrderItem_OrderId_Order` (`OrderId`, `OrderType`) REFERENCES `Order` (`OrderId`, `OrderType`),
+KEY `FK_OrderItem_ProductId_Product` (`ProductId`),
+CONSTRAINT `FK_OrderItem_ProductId_Product` FOREIGN KEY `FK_OrderItem_ProductId_Product` (`ProductId`) REFERENCES `Product` (`ProductId`)
+) COMMENT='Information about\nlike Price, Quantity';
+
+
+
+
+

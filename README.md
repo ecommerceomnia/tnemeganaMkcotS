@@ -1,1 +1,1 @@
-# -u-u-W-o-S
+# Projeto de gerenciamento de estoque
